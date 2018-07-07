@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>クロスジャスティス杯　集計</title>
+    </head>
+    <body>
+       <FORM NAME="form1" ACTION="">
+            <TABLE id="input" BORDER=8>
+              <CAPTION>クロスジャスティス杯　集計フォーム</CAPTION>
+              <TR>
+                <TH>チーム名</TH>
+                <TH>Aの順位</TH>
+                <TH>Bの順位</TH>
+              </TR>
+              <TR>
+              </TR>
+            </TABLE>
+            <button id="button">集計</button>
+       </FORM>
+    <br><br>
+    <TABLE id="result" BORDER=8>
+              <CAPTION>集計結果</CAPTION>
+              <TR align = "center">
+                <TH>順位</TH>
+                <TH>チーム名</TH>
+              </TR>
+              <TR>
+              </TR>
+    </TABLE>
+                
+    </body>
+    <script language="javascript">
+        
+        //　初期処理（入力フォーム生成）
+        for (i = 0; i < 24; i++) {
+            // タグを追加する要素をid属性を指定して取得
+            var target = document.getElementById("input");
+            var j = i;
+            j += 1;
+            // trタグを作成
+            var tableRow = document.createElement("tr");
+
+            // 1つ目のデータをtrタグに追加
+            var tableData1 = document.createElement("td");
+            var inputTn = document.createElement("input");
+            inputTn.setAttribute("type", "text");
+            var str = "tn";
+            str += j.toString();
+            inputTn.setAttribute("id", str);
+            tableData1.appendChild(inputTn);
+            tableRow.appendChild(tableData1);
+
+            // 2つ目のデータをtrタグに追加
+            var tableData1 = document.createElement("td");
+            var inputTn = document.createElement("input");
+            inputTn.setAttribute("type", "number");
+            var str = "ta";
+            str += j.toString();
+            inputTn.setAttribute("id", str);
+            tableData1.appendChild(inputTn);
+            tableRow.appendChild(tableData1);
+            
+            // 3つ目のデータをtrタグに追加
+            var tableData1 = document.createElement("td");
+            var inputTn = document.createElement("input");
+            inputTn.setAttribute("type", "number");
+            var str = "tb";
+            str += j.toString();
+            inputTn.setAttribute("id", str);
+            tableData1.appendChild(inputTn);
+            tableRow.appendChild(tableData1);
+
+            // 作ったタグを指定した要素の子要素として追加
+            target.appendChild(tableRow);
+        }
+        
+        //　初期処理（集計結果をリフレッシュできるよう空のカラムを追加）
+        for (i = 0; i < 24; i++) {
+            // タグを追加する要素をid属性を指定して取得
+            var target = document.getElementById("result");
+
+            // trタグを作成
+            var tableRow = document.createElement("tr");
+            tableRow.setAttribute("id", "column");
+
+            // 1つ目のデータをtrタグに追加
+            var tableData1 = document.createElement("td");
+
+            // 2つ目のデータをtrタグに追加
+            var tableData2 = document.createElement("td");
+
+
+            // 作ったタグを指定した要素の子要素として追加
+            target.appendChild(tableRow);
+        }
+        
+        // ボタンの要素を取得
+        var button = document.getElementById("button");
+ 
+        // ボタンをクリックした時の処理
+        button.addEventListener("click", function(e) {
+ 
+            e.preventDefault();
+            
+            main();
+    　　});
+        
+    　　function main(){
+           //データ読み取り
+           var tn = [];
+           var ta = [];
+           var tb = [];
+          
+           for (var i = 1; i <= 24; i++) {
+               var s = "tn"; 
+               s += i.toString();
+               tn.push(document.getElementById(s).value);
+               s = "ta";
+               s += i.toString();
+               var temp = document.getElementById(s).value;
+               temp.replace(/[０-９]/g, function(s) {
+                    return String.fromCharCode(s.charCodeAt(0) - 65248);
+               });
+               if(temp == ""){temp = 10000}
+               ta.push(parseInt(temp,10));
+               s = "tb";
+               s += i.toString();
+               var temp = document.getElementById(s).value;
+               temp.replace(/[０-９]/g, function(s) {
+                    return String.fromCharCode(s.charCodeAt(0) - 65248);
+               });
+               if(temp == ""){temp = 10000}
+               tb.push(parseInt(temp,10));   
+          }        
+          
+          //順位の計算
+          var name = [];
+          var sum = [];
+          var pointa = [];
+          var pointb = [];
+          for (i = 0; i < 24; i++) {
+              name.push("hoge");
+              sum.push(1000);
+              pointa.push(500);
+              pointb.push(500);
+          }
+          
+          for (i = 0; i < 24; i++) {
+              var tsum = ta[i];
+              tsum += tb[i];
+              var a = [tn[i],tsum,ta[i],tb[i]]
+              for(var j = 0; j < 24; j++){
+                  var a2 = [name[j],sum[j],pointa[j],pointb[j]];
+                  if(a[1] <= sum[j]){
+                      var boo = 0;
+                      if(a[1] == sum[j]){
+                          if(Math.min(a[2], a[3]) < Math.min(pointa[j], pointb[j])){    
+                              boo = 1;
+                          }else if(Math.min(a[2], a[3]) == Math.min(pointa[j], pointb[j])){
+                              if(a[2] < pointa[j]){
+                                  boo = 1;
+                              }
+                          }
+                      }else{
+                          boo = 1;
+                      }
+
+                      if(boo == 1){
+                          name[j] = a[0];
+                          sum[j] = a[1];
+                          pointa[j] = a[2];
+                          pointb[j] = a[3];
+                          a = a2;       
+                      }   
+                  }      
+              }                
+          }
+        
+        for (i = 0; i < 24; i++) {
+            document.getElementById("column").remove();
+        }
+        
+        // 値を表示
+        for (i = 0; i < 24; i++) {
+            // タグを追加する要素をid属性を指定して取得
+            var target = document.getElementById("result");
+            var j = i;
+            j += 1;
+
+            // trタグを作成
+            var tableRow = document.createElement("tr");
+            tableRow.setAttribute("id", "column");
+
+            // 1つ目のデータをtrタグに追加
+            var tableData1 = document.createElement("td");
+            var str = j.toString();
+            str += "位";
+            tableData1.innerHTML = str;
+            tableRow.appendChild(tableData1);
+
+            // 2つ目のデータをtrタグに追加
+            var tableData2 = document.createElement("td");
+            tableData2.innerHTML = name[i];
+            tableRow.appendChild(tableData2);
+
+
+            // 作ったタグを指定した要素の子要素として追加
+            target.appendChild(tableRow);
+        }
+      }
+ 
+    </script>    
+</html>
